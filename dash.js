@@ -79,7 +79,7 @@ const MyDashActor = new Lang.Class({
 
         this.actor._delegate = this;
     },
-
+    
     _allocate: function(actor, box, flags) {
         let contentBox = box;
         let availWidth = contentBox.x2 - contentBox.x1;

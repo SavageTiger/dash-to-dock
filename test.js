@@ -1,3 +1,5 @@
+const Gtk = imports.gi.Gtk;
+const Shell = imports.gi.Shell;
 const Clutter = imports.gi.Clutter;
 const Gio = imports.gi.Gio;
 
@@ -5,7 +7,8 @@ Clutter.init(null);
 
 let stage = new Clutter.Stage();
 
-let texture = new Clutter.Texture({ filename: 'sheepthing.png' });
+let texture = new Shell.GenericContainer({});
+//let texture = new St.Widget(); //({ filename: 'sheepthing.png' });
 
 let hShader = new Clutter.ShaderEffect({
     shader_type: Clutter.ShaderType.FRAGMENT_SHADER
@@ -17,6 +20,10 @@ let vShader = new Clutter.ShaderEffect({
 let shaderGlsl = readFile(
     "./blur.glsl"
 );
+
+let css1 = new Gtk.CssProvider();
+css1.load_from_data(' * { color: #0a0; font-size: 12px; background-color: rgba(0, 0, 0, 0.5); border-radius: 5px; }');
+stage.set_style(css1);
 
 hShader.set_shader_source(shaderGlsl);
 hShader.set_uniform_value('dir', 0.0);

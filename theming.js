@@ -160,6 +160,66 @@ var ThemeManager = new Lang.Class({
         }
     },
 
+    _doSomethingCool: function() {  
+        let actor = this._dash._container;    
+         
+        let readFile = function(filename) {
+            let filePointer = Gio.file_new_for_path(filename);
+            let fileSize    = filePointer.query_info("standard::size",  Gio.FileQueryInfoFlags.NONE, null).get_size();
+            let fileStream  = filePointer.read(null);
+            let fileData    = fileStream.read_bytes(fileSize, null).get_data();
+
+            fileStream.close(null);
+
+            return fileData.toString();
+        }
+
+        let hShader = new Clutter.ShaderEffect({
+            shader_type: Clutter.ShaderType.FRAGMENT_SHADER
+        });
+    
+        let vShader = new Clutter.ShaderEffect({
+            shader_type: Clutter.ShaderType.FRAGMENT_SHADER
+        });
+
+        let shaderGlsl = readFile(
+            "./blur.glsl"
+        );
+
+        hShader.set_shader_source(shaderGlsl);
+        hShader.set_uniform_value('dir', 0.0);
+        hShader.set_uniform_value('width', actor.get_width());
+        hShader.set_uniform_value('height', actor.get_height());
+        hShader.set_uniform_value('radius', 15.0);
+        hShader.set_uniform_value('brightness', 0.9999);
+
+        vShader.set_shader_source(shaderGlsl);
+        vShader.set_uniform_value('dir', 1.0);
+        vShader.set_uniform_value('width', actor.get_width());
+        vShader.set_uniform_value('height', actor.get_height());
+        vShader.set_uniform_value('radius', 15.0);
+        vShader.set_uniform_value('brightness', 0.9999);
+
+        log(actor);
+        log(actor.get_width());
+
+        if (actor.get_effect("hBlur")) {
+            actor.remove_effect_by_name("hBlur");
+        }
+
+        if (actor.get_effect("vBlur")) {
+            actor.remove_effect_by_name("vBlur");
+        }
+
+        // Obviously this is not gonne work in the real world.
+        let primaryBackground = Main.overview._backgroundGroup.get_children()[0];
+        
+        log(primaryBackground.get_texture());//        log(primaryBackground);
+
+        //actor.add_effect_with_name("hBlur", hShader);
+        //actor.add_effect_with_name("vBlur", vShader);
+    },
+
     _updateCustomStyleClasses: function() {
         if (this._settings.get_boolean('apply-custom-theme'))
             this._actor.add_style_class_name('dashtodock');
@@ -267,7 +327,10 @@ var ThemeManager = new Lang.Class({
             newStyle = newStyle + 'background-color:'+ this._customizedBackground + '; ' +
                        'border-color:'+ this._customizedBorder + '; ' +
                        'transition-delay: 0s; transition-duration: 0.250s;';
-            this._dash._container.set_style(newStyle);
+
+            this._doSomethingCool();
+
+            this._dash._container.set_style(newStyle);            
         }
     },
 
